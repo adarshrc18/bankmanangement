@@ -125,3 +125,33 @@ select * from branch;
 select * from accounts;
 select * from transactions;
 
+
+
+-- top 3 highest accounts balance
+select account_number,balance from accounts order by balance desc limit 3;
+
+
+-- total deposited amount 
+select sum(amount) as total_deposit from transactions 
+where transaction_type = "Deposit";
+
+
+-- customers who made withdrawal 
+select distinct c.first_name , c.last_name , 
+from customers c
+inner join accounts a on c.customer_id = a.customer_id 
+inner join transactions t on a.account_number = t.account_number
+where t.transaction_type = "withdrawal"
+
+-- branch wise total balance
+select branch_name , sum(a.balance) as total_balance from accounts a
+inner join branch b on a.branch_id=b.branch_id 
+group by b.branch_name;
+
+-- details of the customers like name , account number , branch name & there account balance
+select c.first_name , c.last_name , a.account_number , b.branch_name , a.balance 
+from customers c 
+inner join accounts a on c.customer_id = a.customer_id 
+inner join branch b on a.branch_id = b.branch_id ;
+
+
