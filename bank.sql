@@ -155,4 +155,75 @@ inner join accounts a on c.customer_id = a.customer_id
 inner join branch b on a.branch_id = b.branch_id ;
 
 
+-- find total balance of each customer 
+select c.customer_id,  c.first_name , c.last_name , sum(a.balance) as total_balance
+from customers c 
+inner join accounts a on c.customer_id = a.customer_id 
+group by c.customer_id , c.first_name , c.last_name ;
+
+-- customers having balance more than 100000
+select c.first_name , c.last_name 
+from customers c 
+inner join accounts a on a.customer_id = c.customer_id 
+where a.balance > 100000;
+
+-- total deposits branch wise
+select b.branch_name , sum(t.amount) as total_deposits
+from branch b 
+inner join accounts a on b.branch_id = a.branch_id
+inner join transactions t on t.account_number = a.account_number 
+where t.transaction_type = 'deposit'
+group by b.branch_name;
+
+-- total withdrawals branch wise
+select b.branch_name , sum(t.amount) as total_withdrawal
+from branch b 
+inner join accounts a on b.branch_id = a.branch_id
+inner join transactions t on t.account_number = a.account_number 
+where t.transaction_type = "withdrawal"
+group by b.branch_name;
+
+-- most active account ( highest transactions)
+select a.account_number , count(*) as no_of_transactions 
+from accounts a 
+inner join transactions t on t.account_number = a.account_number
+group by account_number 
+order by no_of_transactions desc limit 1;
+-- or 
+select account_number , count(*) as transaction_count
+from transactions 
+group by account_number 
+order by transaction_count desc limit 1;
+
+-- find average balance per branch
+select b.branch_name,avg(a.balance) as average_balance
+from accounts a
+inner join branch b on a.branch_id = b.branch_id
+group by b.branch_name;
+
+
+-- find accounts with no transactions 
+select a.account_number
+from transactions t
+inner join accounts a on t.account_number = a.account_number
+where t.account_number is null;
+
+-- last transaction of each account
+select account_number , max(transaction_date) as last_transaction 
+from transactions 
+group by account_number;
+
+-- detect suspicious transactions less than 50000
+select account_number , amount , transaction_date 
+from transactions
+where amount <50000;
+
+-- monthly total transaction amount
+select month(transaction_date) as month ,sum(amount) as total_amount
+from transactions
+group by month(transaction_date);
+
+
+
+
 
